@@ -1,20 +1,33 @@
-# SSL certificates (private keys)
+# SSL certificates
 cert.key
 cert.crt
 *.pem
 *.p12
 
-# Data / database
-data/jobs.json
+# User config and data (override defaults at runtime, not for version control)
+config.yaml
+data/
+
+# Root-level dev copies (canonical versions live in postdoc_tracker/)
+/server.py
+/sources.py
+/public/
+/requirements.txt
+
+# Node / Electron
+electron/node_modules/
+electron/package-lock.json
 
 # Python
 __pycache__/
 *.py[cod]
 *.pyo
+*.egg-info/
+dist/
+build/
 .venv/
 venv/
 env/
-*.egg-info/
 
 # Environment variables
 .env

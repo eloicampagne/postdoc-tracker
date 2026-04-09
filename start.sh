@@ -1,10 +1,4 @@
 #!/bin/bash
+# Run without Electron — opens the app in your default browser.
 cd "$(dirname "$0")"
-if [ -f cert.crt ] && [ -f cert.key ]; then
-    SCHEME="https"
-else
-    SCHEME="http"
-fi
-echo "Starting Postdoc Tracker on ${SCHEME}://localhost:3742"
-open "${SCHEME}://localhost:3742" &
-python3 server.py
+python3 -m postdoc_tracker "$@"

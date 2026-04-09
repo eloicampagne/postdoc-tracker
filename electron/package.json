@@ -1,0 +1,12 @@
+{
+  "name": "postdoc-tracker",
+  "version": "0.1.0",
+  "description": "Local web app to track postdoc and PhD job offers",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "devDependencies": {
+    "electron": "^41.0.0"
+  }
+}

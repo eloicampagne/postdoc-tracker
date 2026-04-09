@@ -1,11 +1,10 @@
-#!/usr/bin/env python3
 """
 Postdoc Tracker – Flask backend
-Run: python3 server.py
 """
 
 import json
 import re
+import shutil
 import threading
 import uuid
 from datetime import datetime, timezone
@@ -25,20 +24,32 @@ try:
 except ImportError:
     import json as _json
     def _load_yaml(path):
-        # Fallback: read a plain JSON file named config.json if yaml unavailable
         p = Path(str(path).replace(".yaml", ".json"))
         return _json.loads(p.read_text()) if p.exists() else {}
 
-from sources import SOURCES as FEEDS, build_url as build_feed_url
+from .sources import SOURCES as FEEDS, build_url as build_feed_url
+
+# ── Paths ─────────────────────────────────────────────────────────────────────
+PACKAGE_DIR = Path(__file__).parent
+PUBLIC      = PACKAGE_DIR / "public"
+
+# User data dir: prefer cwd (dev / run-in-place), else ~/.postdoc-tracker/
+_cwd = Path.cwd()
+if (_cwd / "config.yaml").exists():
+    USER_DIR = _cwd
+else:
+    USER_DIR = Path.home() / ".postdoc-tracker"
+    USER_DIR.mkdir(exist_ok=True)
+    if not (USER_DIR / "config.yaml").exists():
+        shutil.copy(PACKAGE_DIR / "config_default.yaml", USER_DIR / "config.yaml")
+
+DATA_DIR = USER_DIR / "data"
+DB_PATH  = USER_DIR / "data" / "jobs.json"
 
 # ── Config ────────────────────────────────────────────────────────────────────
-BASE_DIR    = Path(__file__).parent
-DATA_DIR    = BASE_DIR / "data"
-DB_PATH     = DATA_DIR / "jobs.json"
-PUBLIC      = BASE_DIR / "public"
-CONFIG      = _load_yaml(BASE_DIR / "config.yaml")
-PORT        = CONFIG.get("app", {}).get("port", 3742)
-APP_TITLE   = CONFIG.get("app", {}).get("title", "Postdoc Tracker")
+CONFIG       = _load_yaml(USER_DIR / "config.yaml")
+PORT         = CONFIG.get("app", {}).get("port", 3742)
+APP_TITLE    = CONFIG.get("app", {}).get("title", "Postdoc Tracker")
 FILTER_OUT   = [kw.lower() for kw in CONFIG.get("filter_out", [])]
 DOMAIN_RULES = {k: [kw.lower() for kw in v] for k, v in CONFIG.get("domain_rules", {}).items()}
 
@@ -851,13 +862,15 @@ def style_vars():
     return Response(css, mimetype="text/css")
 
 # ── Run ───────────────────────────────────────────────────────────────────────
-if __name__ == "__main__":
-    cert = BASE_DIR / "cert.crt"
-    key  = BASE_DIR / "cert.key"
-    if cert.exists() and key.exists():
-        print(f"{APP_TITLE} → https://localhost:{PORT}")
-        app.run(host="127.0.0.1", port=PORT, debug=False,
-                ssl_context=(str(cert), str(key)))
-    else:
-        print(f"{APP_TITLE} → http://localhost:{PORT}")
-        app.run(host="127.0.0.1", port=PORT, debug=False)
+def run(port: int = PORT, open_browser: bool = True, force_http: bool = False):
+    cert = USER_DIR / "cert.crt"
+    key  = USER_DIR / "cert.key"
+    ssl_context = (str(cert), str(key)) if (cert.exists() and key.exists() and not force_http) else None
+    scheme = "https" if ssl_context else "http"
+    url = f"{scheme}://localhost:{port}"
+    print(f"{APP_TITLE} → {url}", flush=True)
+    if open_browser:
+        import threading, webbrowser
+        threading.Timer(1.0, lambda: webbrowser.open(url)).start()
+    app.run(host="127.0.0.1", port=port, debug=False,
+            **({"ssl_context": ssl_context} if ssl_context else {}))
