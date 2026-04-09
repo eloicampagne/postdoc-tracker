@@ -1,20 +1,21 @@
+![PostdocTracker](public/postdoctracker.png)
 # Postdoc Tracker
 
 A local web app to track postdoc and PhD job offers. Fetch jobs from academic and industry sources, scrape individual pages by URL, or add positions manually. Annotate with notes, rate by affinity, and mark applications.
 
-Data is stored locally in `data/jobs.json` — nothing leaves your machine.
+Data is stored locally in `data/jobs.json`: nothing leaves your machine.
 
 ## Features
 
 - **Fetch jobs** from INRIA, CNRS, LinkedIn, Welcome to the Jungle, or any RSS feed URL
 - **Scrape any job page** by URL (extracts title, institution, deadline, description)
 - **Add jobs manually**
-- **Auto-tagging** by domain — keywords are fully configurable in `config.yaml`
+- **Auto-tagging** by domain, keywords are fully configurable in `config.yaml`
 - **Filter** by domain, position type (postdoc / PhD / other), and location
 - **Sort** by deadline, affinity, or date added
 - **Star rating** (1–5) and **notes** per job, saved automatically
 - **Bulk delete** selected jobs
-- **Theming** — colors, font, and accent fully configurable in `config.yaml`
+- **Theming**: colors, font, and accent fully configurable in `config.yaml`
 
 ## Requirements
 
@@ -44,7 +45,7 @@ Or start manually:
 python3 server.py
 ```
 
-## HTTPS (optional — needed for Safari on macOS)
+## HTTPS (optional, needed for Safari on macOS)
 
 Safari blocks some features on plain HTTP. To enable HTTPS, generate a self-signed certificate:
 
@@ -53,7 +54,7 @@ openssl req -x509 -newkey rsa:2048 -keyout cert.key -out cert.crt -days 3650 -no
   -subj "/CN=localhost" -addext "subjectAltName=IP:127.0.0.1,DNS:localhost"
 ```
 
-The server auto-detects `cert.crt` / `cert.key` in the project root and switches to HTTPS. On first visit, your browser will warn about the self-signed certificate — click through to proceed.
+The server auto-detects `cert.crt` / `cert.key` in the project root and switches to HTTPS. On first visit, your browser will warn about the self-signed certificate; click through to proceed.
 
 > `cert.key` and `cert.crt` are gitignored and never committed.
 
@@ -66,7 +67,7 @@ All behaviour is controlled by `config.yaml`:
 | `app` | Port and window title |
 | `search` | Default keywords/location pre-filled in the UI |
 | `filter_out` | Keywords that cause a fetched job to be silently dropped (e.g. internship) |
-| `domain_rules` | Domain tags and their trigger keywords — add/rename/remove freely |
+| `domain_rules` | Domain tags and their trigger keywords; add/rename/remove freely |
 | `style` | Font, accent color, background, etc. |
 
 Restart the server after editing `config.yaml`.
@@ -82,7 +83,7 @@ domain_rules:
     - autonomous systems
 ```
 
-That's all — the sidebar filter button and the domain checkboxes in forms are generated automatically.
+That's all. The sidebar filter button and the domain checkboxes in forms are generated automatically.
 
 ## Sources
 
