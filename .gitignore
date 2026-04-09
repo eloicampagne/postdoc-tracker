@@ -1,0 +1,29 @@
+# SSL certificates (private keys)
+cert.key
+cert.crt
+*.pem
+*.p12
+
+# Data / database
+data/jobs.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Environment variables
+.env
+.env.*
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp

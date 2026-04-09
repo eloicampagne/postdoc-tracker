@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Postdoc Tracker</title>
+  <link rel="stylesheet" href="/api/style-vars.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="app-header">
+  <h1>Postdoc <span>Tracker</span></h1>
+  <div id="header-stats" class="header-count"></div>
+</header>
+
+<div class="app-body">
+
+  <!-- ── Sidebar ─────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+
+    <!-- Search -->
+    <div class="sidebar-section">
+      <h3>Search</h3>
+      <input type="text" id="search-input" placeholder="Title, institution, notes…" />
+    </div>
+
+    <!-- Location filter -->
+    <div class="sidebar-section">
+      <h3>Location</h3>
+      <input type="text" id="location-input" placeholder="e.g. Paris, Netherlands…" />
+    </div>
+
+    <!-- Domain filter -->
+    <div class="sidebar-section">
+      <h3>Domain</h3>
+      <div class="domain-filters" id="domain-filters">
+        <button class="domain-toggle active-all" data-domain="all">All</button>
+      </div>
+    </div>
+
+    <!-- Sort -->
+    <div class="sidebar-section">
+      <h3>Sort by</h3>
+      <div class="sort-row">
+        <select id="sort-select">
+          <option value="deadline">Deadline (soonest)</option>
+          <option value="affinity">Affinity (highest)</option>
+          <option value="added">Recently added</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Position type filter -->
+    <div class="sidebar-section">
+      <h3>Position type</h3>
+      <div class="domain-filters">
+        <button class="postype-toggle active-all" data-postype="all">All</button>
+        <button class="postype-toggle" data-postype="postdoc">Postdoc</button>
+        <button class="postype-toggle" data-postype="phd">PhD</button>
+        <button class="postype-toggle" data-postype="other">Other</button>
+      </div>
+    </div>
+
+    <!-- Options -->
+    <div class="sidebar-section">
+      <h3>Options</h3>
+      <div class="toggle-row">
+        <label class="toggle">
+          <input type="checkbox" id="hide-applied-toggle" />
+          <span class="toggle-slider"></span>
+        </label>
+        <label for="hide-applied-toggle">Hide applied</label>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="sidebar-section">
+      <h3>Stats</h3>
+      <div id="sidebar-stats" style="color:var(--muted);font-size:13px;line-height:1.9;"></div>
+    </div>
+
+  </aside>
+
+  <!-- ── Main ────────────────────────────────────────────────────── -->
+  <main class="main">
+
+    <!-- Fetch panel -->
+    <div class="fetch-panel" id="fetch-panel">
+      <div class="fetch-panel-header" id="fetch-panel-toggle">
+        <span>➕</span>
+        <span>Add / Fetch Jobs</span>
+        <span style="margin-left:auto;color:var(--muted);font-size:12px;" id="fetch-caret">▼</span>
+      </div>
+      <div class="fetch-panel-body" id="fetch-panel-body" style="display:none;">
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="feed">From Feed</button>
+          <button class="tab-btn" data-tab="url">From URL</button>
+          <button class="tab-btn" data-tab="manual">Manual</button>
+        </div>
+
+        <!-- Tab: Feed -->
+        <div class="tab-pane active" id="tab-feed">
+          <div class="form-grid">
+            <div class="input-group">
+              <label>Source</label>
+              <select id="feed-source"></select>
+            </div>
+            <div class="input-group">
+              <label>Keywords / Job title</label>
+              <input type="text" id="feed-keywords" placeholder="research scientist, postdoc GNN…" />
+            </div>
+            <div class="input-group" id="feed-location-group">
+              <label>Location</label>
+              <input type="text" id="feed-location" placeholder="Paris, Rennes, France…" />
+            </div>
+          </div>
+          <div class="input-group" style="margin-top:8px;">
+            <label style="color:var(--muted);font-size:12px;">Or paste a custom RSS URL</label>
+            <input type="url" id="feed-custom-url" placeholder="https://…/feed.rss" />
+          </div>
+          <button class="btn-primary" id="fetch-feed-btn" style="margin-top:10px;">Fetch Jobs</button>
+          <span id="feed-spinner" style="display:none;margin-left:10px;"><span class="spinner"></span></span>
+          <div id="feed-error" style="color:var(--red);font-size:12px;margin-top:8px;display:none;"></div>
+        </div>
+
+        <!-- Tab: URL -->
+        <div class="tab-pane" id="tab-url">
+          <div class="input-group">
+            <label>Job posting URL</label>
+            <div class="fetch-row">
+              <input type="url" id="url-input" placeholder="https://…" />
+              <button class="btn-secondary" id="fetch-url-btn">Preview</button>
+            </div>
+          </div>
+          <span id="url-spinner" style="display:none;"><span class="spinner"></span> Fetching…</span>
+          <div id="url-error" style="color:var(--red);font-size:12px;margin-top:8px;display:none;"></div>
+        </div>
+
+        <!-- Tab: Manual -->
+        <div class="tab-pane" id="tab-manual">
+          <div class="form-grid">
+            <div class="input-group">
+              <label>Title *</label>
+              <input type="text" id="m-title" placeholder="Postdoc in GNN for Energy Systems" />
+            </div>
+            <div class="input-group">
+              <label>Institution *</label>
+              <input type="text" id="m-institution" placeholder="TU Delft" />
+            </div>
+            <div class="input-group">
+              <label>Location</label>
+              <input type="text" id="m-location" placeholder="Delft, Netherlands" />
+            </div>
+            <div class="input-group">
+              <label>Deadline</label>
+              <input type="date" id="m-deadline" />
+            </div>
+            <div class="input-group">
+              <label>URL</label>
+              <input type="url" id="m-url" placeholder="https://…" />
+            </div>
+            <div class="input-group">
+              <label>Salary</label>
+              <input type="text" id="m-salary" placeholder="€3,200/month" />
+            </div>
+            <div class="input-group span2">
+              <label>Description</label>
+              <textarea id="m-description" rows="3" placeholder="Short description…"></textarea>
+            </div>
+            <div class="input-group">
+              <label>Position type</label>
+              <select id="m-postype">
+                <option value="postdoc">Postdoc</option>
+                <option value="phd">PhD</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="input-group span2">
+              <label>Domains</label>
+              <div class="domain-checkboxes" id="m-domain-checks"></div>
+            </div>
+          </div>
+          <button class="btn-success" id="manual-add-btn">Add Job</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Job list -->
+    <div id="jobs-container" class="jobs-grid"></div>
+
+  </main>
+</div>
+
+<!-- ── Import Modal ─────────────────────────────────────────────── -->
+<div class="modal-overlay" id="import-modal" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="import-modal-title">Import Jobs</h2>
+      <button class="btn-icon" id="import-modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="import-select-all-row" style="margin-bottom:10px;">
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;">
+          <input type="checkbox" id="import-select-all" style="accent-color:var(--accent);" />
+          Select all (new jobs only)
+        </label>
+      </div>
+      <table class="import-table">
+        <thead>
+          <tr>
+            <th style="width:30px;"></th>
+            <th class="sortable" data-col="title">Title / Institution <span class="sort-icon"></span></th>
+            <th class="sortable" data-col="location">Location <span class="sort-icon"></span></th>
+            <th class="sortable" data-col="deadline">Deadline <span class="sort-icon"></span></th>
+            <th class="sortable" data-col="positionType">Type <span class="sort-icon"></span></th>
+            <th>Domains</th>
+          </tr>
+        </thead>
+        <tbody id="import-table-body"></tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="import-cancel-btn">Cancel</button>
+      <button class="btn-primary" id="import-confirm-btn">Import Selected</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Edit/Preview Modal ────────────────────────────────────────── -->
+<div class="modal-overlay" id="preview-modal" style="display:none;">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="preview-modal-title">Add Job</h2>
+      <button class="btn-icon" id="preview-modal-close">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="input-group">
+          <label>Title *</label>
+          <input type="text" id="p-title" />
+        </div>
+        <div class="input-group">
+          <label>Institution</label>
+          <input type="text" id="p-institution" />
+        </div>
+        <div class="input-group">
+          <label>Location</label>
+          <input type="text" id="p-location" />
+        </div>
+        <div class="input-group">
+          <label>Deadline</label>
+          <input type="date" id="p-deadline" />
+        </div>
+        <div class="input-group">
+          <label>URL</label>
+          <input type="url" id="p-url" />
+        </div>
+        <div class="input-group">
+          <label>Salary</label>
+          <input type="text" id="p-salary" />
+        </div>
+        <div class="input-group span2">
+          <label>Description</label>
+          <textarea id="p-description" rows="4"></textarea>
+        </div>
+        <div class="input-group">
+          <label>Position type</label>
+          <select id="p-postype">
+            <option value="postdoc">Postdoc</option>
+            <option value="phd">PhD</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="input-group span2">
+          <label>Domains</label>
+          <div class="domain-checkboxes" id="p-domain-checks"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="preview-cancel-btn">Cancel</button>
+      <button class="btn-success" id="preview-save-btn">Save Job</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Bulk action bar ──────────────────────────────────────────── -->
+<div class="bulk-bar" id="bulk-bar" style="display:none;">
+  <span id="bulk-count"></span>
+  <div class="bulk-actions">
+    <button class="btn-secondary btn-sm" id="bulk-select-all-btn">Select all visible</button>
+    <button class="btn-secondary btn-sm" id="bulk-deselect-btn">Deselect all</button>
+    <button class="btn-danger btn-sm" id="bulk-delete-btn">Delete selected</button>
+  </div>
+</div>
+
+<!-- ── Toast container ──────────────────────────────────────────── -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+# ── Postdoc Tracker — global configuration ────────────────────────────────────
+# Restart the server after editing this file.
+
+app:
+  port: 3742
+  title: "Postdoc Tracker"
+
+# Pre-filled values in the "From Feed" search form.
+# These are just convenient defaults — you can always override them in the UI.
+search:
+  default_keywords: "machine learning graph neural networks"
+  default_location:  "Paris"
+  # LinkedIn recency filter: r86400=24h  r604800=1 week  r2592000=1 month
+  linkedin_time_window: r2592000
+
+# Jobs whose title or description contains any of these words (case-insensitive)
+# are silently dropped at fetch time and never shown in the import modal.
+filter_out:
+  - internship
+  - intern
+  - stage
+  - stagiaire
+  - apprentissage
+  - alternance
+  - apprenti
+
+# ── Domain auto-tagger ────────────────────────────────────────────────────────
+# Each key is a domain tag; its value is a list of keywords (case-insensitive).
+# A job is tagged with a domain if any keyword appears in its title/description.
+# Add, rename, or remove domains freely — restart the server to apply changes.
+domain_rules:
+  ml:
+    - machine learning
+    - deep learning
+    - neural network
+    - llm
+    - transformer
+    - nlp
+    - reinforcement learning
+    - artificial intelligence
+    - computer vision
+    - data science
+    - statistical learning
+    - bayesian
+    - apprentissage automatique
+    - apprentissage profond
+  gnn:
+    - graph neural
+    - gnn
+    - graph learning
+    - geometric deep learning
+    - graph convolution
+    - graph network
+    - message passing
+    - node classification
+    - link prediction
+    - knowledge graph
+    - heterogeneous graph
+  energy:
+    - energy
+    - power system
+    - electricity
+    - renewable
+    - grid
+    - photovoltaic
+    - battery
+    - solar
+    - wind turbine
+    - smart grid
+    - energy storage
+    - demand response
+    - load forecasting
+    - carbon
+    - climate
+    - sustainability
+    - edf
+    - electrical network
+    - réseau électrique
+    - énergétique
+    - énergie
+    - électrique
+    - transition énergétique
+
+# ── Theme ─────────────────────────────────────────────────────────────────────
+# Changes here take effect after a server restart.
+# Font must be available on https://fonts.bunny.net
+style:
+  font:       "Crimson Pro"
+  accent:     "#607D3B"   # olive green  — links, buttons, active states
+  secondary:  "#8B5E3C"   # warm brown   — hover accents, card highlights
+  bg:         "#F5F0E7"   # warm cream   — page background
+  surface:    "#FFFFFF"   # white        — cards, panels
+  surface2:   "#F5F0E7"   # cream        — inputs, secondary surfaces
+  border:     "#D4C9B5"   # beige        — dividers, input borders
+  text:       "#2E2E2E"   # dark charcoal — main text
+  muted:      "#8A7D6B"   # warm grey    — labels, secondary text
+  red:        "#c0392b"
+  green:      "#607D3B"   # same as accent for success states
+  orange:     "#d35400"
+  yellow:     "#c9a227"
+  shadow:     "0 2px 12px rgba(0,0,0,.08)"
