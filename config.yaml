@@ -8,8 +8,8 @@ app:
 # Pre-filled values in the "From Feed" search form.
 # These are just convenient defaults — you can always override them in the UI.
 search:
-  default_keywords: "machine learning graph neural networks"
-  default_location:  "Paris"
+  default_keywords: "postdoc"
+  default_location:  "New York"
   # LinkedIn recency filter: r86400=24h  r604800=1 week  r2592000=1 month
   linkedin_time_window: r2592000
 

@@ -268,6 +268,7 @@ def scrape_linkedin(cfg: dict) -> tuple[str, list[dict]]:
     """
     headers = {
         **_BR_HEADERS,
+        "Accept-Language":  "en-US,en;q=0.9",  # override fr-FR: LinkedIn uses this to pick regional index
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Encoding": "gzip, deflate, br",
     }
@@ -288,7 +289,7 @@ def scrape_linkedin(cfg: dict) -> tuple[str, list[dict]]:
             continue
         title    = title_el.get_text(strip=True)
         company  = company_el.get_text(strip=True) if company_el else ""
-        location = loc_el.get_text(strip=True) if loc_el else "France"
+        location = loc_el.get_text(strip=True) if loc_el else ""
         # Strip tracking params from LinkedIn job URLs
         job_url  = link_el["href"].split("?")[0]
         if job_url in seen:
@@ -730,7 +731,10 @@ def fetch_feed():
         if not feed_cfg:
             return jsonify({"error": "Unknown source"}), 400
         feed_type = feed_cfg["type"]
-        feed_url  = build_feed_url(source, keywords, location)
+        s = CONFIG.get("search", {})
+        kw  = keywords  or s.get("default_keywords", "")
+        loc = location  or s.get("default_location", "")
+        feed_url  = build_feed_url(source, kw, loc)
 
     try:
         if feed_type == "inria":

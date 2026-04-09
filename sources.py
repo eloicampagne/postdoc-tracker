@@ -63,15 +63,12 @@ SOURCES = {
         "type": "linkedin",
         "base_url": "https://www.linkedin.com/jobs/search/",
         "supports_location": True,
-        "default_keywords": "postdoc machine learning",
-        "default_location": "France",
     },
     "wtj": {
         "name": "Welcome to the Jungle",
         "type": "wtj",
         "base_url": "https://www.welcometothejungle.com/fr/jobs",
         "supports_location": True,
-        "default_location": "France",
     },
 
 }
@@ -85,8 +82,8 @@ def build_url(source_id: str, keywords: str = "", location: str = "") -> str:
     cfg   = SOURCES[source_id]
     stype = cfg["type"]
     base  = cfg["base_url"]
-    kw    = keywords.strip() or cfg.get("default_keywords", "")
-    loc   = location.strip() or cfg.get("default_location", "")
+    kw    = keywords.strip()
+    loc   = location.strip()
 
     if stype == "inria":
         # INRIA ignores URL search params server-side — keyword and location
@@ -98,8 +95,8 @@ def build_url(source_id: str, keywords: str = "", location: str = "") -> str:
 
     if stype == "linkedin":
         params = {
-            "keywords": kw or "postdoc machine learning",
-            "location": loc or "France",
+            "keywords": kw,
+            "location": loc,
             "f_TPR":    "r2592000",
             "sortBy":   "DD",
         }
